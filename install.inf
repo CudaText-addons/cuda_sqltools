@@ -1,9 +1,10 @@
 [info]
-title=SQLTools
+title=SQL Tools
 desc=Swiss army knife for your SQL databases. Gives lot of commands to work with databases: execute queries, format queries, show tables schema, show tables records, etc.
 type=cudatext-plugin
 subdir=cuda_sqltools
 homepage=https://github.com/mtxr/CudaText-SQLTools
+api=1.0.252
 
 ;[item1]
 ;section=events
@@ -17,11 +18,17 @@ hotkey=Ctrl+E|Ctrl+E
 
 [item3]
 section=commands
+caption=SQL Tools\Execute entire file
+method=executeFile
+hotkey=
+
+[item5]
+section=commands
 caption=SQL Tools\Explain plan
 method=explainPlan
 hotkey=Ctrl+E|Ctrl+X
 
-[item4]
+[item6]
 section=commands
 caption=SQL Tools\Describe function
 method=describeFunction
@@ -72,28 +79,44 @@ caption=SQL Tools\List and run saved queries
 method=runSavedQuery
 hotkey=Ctrl+E|Ctrl+A
 
+[item36]
+section=commands
+caption=SQL Tools\List and insert saved queries
+method=insertSavedQuery
+hotkey=
+
 [item37]
 section=commands
 caption=SQL Tools\Remove saved query
 method=deleteSavedQuery
 hotkey=Ctrl+E|Ctrl+R
 
+[item39]
+section=commands
+caption=SQL Tools\Refresh connection data
+method=refreshConnData
+
 [item40]
+section=commands
+caption=SQL Tools\Clear table+function cache
+method=clearCache
+
+[item70]
 section=commands
 caption=SQL Tools\-
 method=_
 
-[item41]
+[item80]
 section=commands
 caption=SQL Tools\Select connection
 method=selectConnection
 
-[item51]
+[item81]
 section=commands
-caption=SQL Tools\Setup connections
+caption=SQL Tools\Edit connections config
 method=editConnections
 
-[item52]
+[item82]
 section=commands
-caption=SQL Tools\Setup plugin
+caption=SQL Tools\Edit main config
 method=editSettings

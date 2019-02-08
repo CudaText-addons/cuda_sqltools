@@ -14,39 +14,29 @@ SQLTools will save you (for sure) a lot of time and help you to increase your pr
 
 <span class="badge-paypal"><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RSMB6DGK238V8" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="PayPal donate button" /></a></span>
 
-## Contributors
-
-These fellows helped SQLTools become better than ever. Thank you so much!
-
-* [@tkopets](https://github.com/tkopets)
-* [@gabrielebarbieri](https://github.com/gabrielebarbieri)
-
 ## Features
 
-* View table schemas (`CTRL+e, CTRL+d`)
+* Works with PostgreSQL, MySQL, Oracle, MSSQL, SQLite, Vertica, Firebird
+* Run SQL Queries &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+e</kbd>
+![Auto complete and run SQL queries](https://github.com/mtxr/SQLTools/raw/images/execute_auto_complete.gif?raw=true)
+* View table description &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+d</kbd>
 ![View table schemas](https://github.com/mtxr/SQLTools/raw/images/table_description.gif?raw=true)
-* View Queries history (`CTRL+e, CTRL+h`)
-* Show table records (`CTRL+e, CTRL+s`)
+* Show table records &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+s</kbd>
 ![Show table records](https://github.com/mtxr/SQLTools/raw/images/table_records.gif?raw=true)
-* Auto complete (for PostgreSQL & MySQL. Looking for help with other SGDBs)
-* Run SQL Queries (`CTRL+e, CTRL+e`)
-![Auto complete (PostgreSQL & MySQL) && Run SQL Queries](https://github.com/mtxr/SQLTools/raw/images/execute_auto_complete.gif?raw=true)
-* Show explain plan for queries (PostgreSQL, MySQL, Oracle, Vertica, SQLite) (`CTRL+e, CTRL+x`)
-* Formatting SQL Queries (`CTRL+e, CTRL+b`)
+* Show explain plan for queries &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+x</kbd>
+* Formatting SQL Queries &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+b</kbd>
 ![Formatting SQL Queries](https://github.com/mtxr/SQLTools/raw/images/format_sql.gif?raw=true)
-* Threading Support (prevent CudaText lockups)
-* Query timeout (Kill thread if query takes too long)
-* Unescape chars for languages (PHP \" is replace by ")
-* Save queries (`CTRL+e, CTRL+q`)
-* List and Run saved queries (`CTRL+e, CTRL+a`)
-* Remove saved queries (`CTRL+e, CTRL+r`)
+* View Queries history &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+h</kbd>
+* Save queries &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+q</kbd>
+* List and Run saved queries &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+l</kbd>
+* Remove saved queries &nbsp; <kbd>CTRL+e</kbd>, <kbd>CTRL+r</kbd>
+* Threading support to prevent lockups
+* Query timeout (kill thread if query takes too long)
 
-## Todo
+## Contributors
 
-Upcoming features:
-
-* Auto complete for Oracle, Vertica, Firebird and SQLite
-
+This project exists thanks to all the people who contribute.
+<a href="https://github.com/mtxr/SQLTools/graphs/contributors"><img src="https://opencollective.com/SQLTools/contributors.svg?width=890&button=false" /></a>
 
 ## Configuration 
 
