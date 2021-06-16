@@ -275,7 +275,7 @@ class ST:
                 )
         menu.sort()
 
-        selected = dlg_menu(MENU_LIST, menu, caption='Connections')
+        selected = dlg_menu(DMENU_LIST, menu, caption='Connections')
         ST.setConnection(selected, menu, tablesCallback, columnsCallback, functionsCallback)
 
     @staticmethod
@@ -284,7 +284,7 @@ class ST:
             msg_er('Your database has no tables')
             return
 
-        selected = dlg_menu(MENU_LIST, ST.tables, caption='Tables')
+        selected = dlg_menu(DMENU_LIST, ST.tables, caption='Tables')
         callback(selected)
 
     @staticmethod
@@ -293,7 +293,7 @@ class ST:
             msg_er('Your database has no functions')
             return
 
-        selected = dlg_menu(MENU_LIST, ST.functions, caption='Functions')
+        selected = dlg_menu(DMENU_LIST, ST.functions, caption='Functions')
         callback(selected)
 
 
@@ -444,7 +444,7 @@ class Command:
             msg_status('SQL Tools: History is empty')
             return
 
-        selected = dlg_menu(MENU_LIST, history.all(), caption='History')
+        selected = dlg_menu(DMENU_LIST, history.all(), caption='History')
         if selected is None:
             return None
         return ST.conn.execute(history.get(selected), output)
@@ -476,7 +476,7 @@ class Command:
             options.append('\t'.join([str(alias), str(query)]))
         options.sort()
 
-        selected = dlg_menu(MENU_LIST, options, caption='Queries')
+        selected = dlg_menu(DMENU_LIST, options, caption='Queries')
         if selected is None:
             return None
         text = queriesList.get(options[selected].split('\t')[0])
@@ -504,7 +504,7 @@ class Command:
             options.append('\t'.join([str(alias), str(query)]))
         options.sort()
 
-        selected = dlg_menu(MENU_LIST, options, caption='Queries')
+        selected = dlg_menu(DMENU_LIST, options, caption='Queries')
         if selected is None:
             return None
         text = options[selected].split('\t')[0]
