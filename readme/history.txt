@@ -1,3 +1,5 @@
+2022.12.29
+- fix: error under Python 3.10+
 
 2018.11.06
 + show table title for output of "Describe table", "Show table records"
