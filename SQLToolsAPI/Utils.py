@@ -44,7 +44,7 @@ def parseJson(filename):
         content = re.sub(r',([ \t\r\n]+)\]', r'\1]', content)
 
         # Return json file
-        return json.loads(content, encoding='utf-8')
+        return json.loads(content)
 
 
 def saveJson(content, filename):
