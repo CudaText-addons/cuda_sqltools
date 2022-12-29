@@ -51,21 +51,24 @@ def startPlugin():
 
     try:
         settings = Settings(SETTINGS_FILENAME, default=SETTINGS_FILENAME_DEFAULT)
-    except:
+    except Exception as ex:
         settings = None
         _log('Error parsing '+SETTINGS_FILENAME)
+        print('ERROR: SQL Tools:', str(ex))
 
     try:
         queries = Storage(QUERIES_FILENAME, default=QUERIES_FILENAME_DEFAULT)
-    except:
+    except Exception as ex:
         queries = None
         _log('Error parsing '+QUERIES_FILENAME)
+        print('ERROR: SQL Tools:', str(ex))
 
     try:
         connections = Settings(CONNECTIONS_FILENAME, default=CONNECTIONS_FILENAME_DEFAULT)
-    except:
+    except Exception as ex:
         connections = None
         _log('Error parsing '+CONNECTIONS_FILENAME)
+        print('ERROR: SQL Tools:', str(ex))
 
     if settings:
         history     = History(settings.get('history_size', 100))
@@ -80,17 +83,20 @@ def getConnections():
 
     connectionsObj = {}
 
-    options = connections.get('connections', {})
-    allSettings = settings.all()
-
-    for name, config in options.items():
-        connectionsObj[name] = Connection(name, config, settings=allSettings, commandClass='Command')
+    if connections:
+        options = connections.get('connections', {})
+        allSettings = settings.all()
+    
+        for name, config in options.items():
+            connectionsObj[name] = Connection(name, config, settings=allSettings, commandClass='Command')
 
     return connectionsObj
 
 
 def loadDefaultConnection():
 
+    if not connections:
+        return
     default = connections.get('default', None)
     if not default:
         return
