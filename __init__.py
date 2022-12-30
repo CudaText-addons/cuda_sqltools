@@ -126,7 +126,7 @@ def output(content):
 def output_title(content):
 
     output(output_title.title+'\n'+content)
-    
+
 
 def toNewTab(content, discard=None):
 
@@ -136,9 +136,24 @@ def toNewTab(content, discard=None):
 
 
 def editor_insert(text):
-    
+
     ed.cmd(cmds.cCommand_TextInsert, text=text)
-    
+
+
+def get_editor_paragraph(ed):
+
+    x0, y0, x1, y1 = ed.get_carets()[0]
+    y = y0
+    while (y>=0) and (ed.get_text_line(y).strip()):
+        y -= 1
+    y_begin = y+1
+    y = y0
+    y_last = ed.get_line_count()-1
+    while (y<=y_last) and (ed.get_text_line(y).strip()):
+        y += 1
+    y_end = y
+    return '\n'.join([ed.get_text_line(j) for j in range(y_begin, y_end)])
+
 
 def get_editor_text():
 
@@ -160,6 +175,8 @@ def get_editor_text():
     elif opt=='line':
         x0, y0, x1, y1 = ed.get_carets()[0]
         return ed.get_text_line(y0)
+    elif opt=='paragraph':
+        return get_editor_paragraph(ed)
     else:
         _log('Option "expand_to" value "%s" not supported'%opt)
         return ''
