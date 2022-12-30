@@ -6,10 +6,6 @@ subdir=cuda_sqltools
 homepage=https://github.com/CudaText-addons/cuda_sqltools
 api=1.0.364
 
-;[item1]
-;section=events
-;events=on_start
-
 [item2]
 section=commands
 caption=SQL Tools\Execute query
