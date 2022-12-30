@@ -1,11 +1,7 @@
-__version__ = "v0.9.0"
-
 import os
-# import CudaText api
 from cudatext import *
 import cudatext_cmd as cmds
 
-# import SQLTools api
 from .SQLToolsAPI import Utils
 from .SQLToolsAPI.Storage import Storage, Settings
 from .SQLToolsAPI.Connection import Connection
