@@ -1,7 +1,6 @@
 __version__ = "v0.9.0"
 
 import os
-
 # import CudaText api
 from cudatext import *
 import cudatext_cmd as cmds
@@ -104,6 +103,20 @@ def loadDefaultConnection():
     return default
 
 
+output_h = dlg_proc(
+    app_proc(PROC_GET_OUTPUT_FORM, ''),
+    DLG_CTL_HANDLE,
+    index=0 # memo index in Output is 0
+    )
+ed_output = Editor(output_h)
+
+def output_scroll_to_end():
+    cnt = ed_output.get_line_count()
+    if cnt==0: return
+    ed_output.set_caret(0, cnt-1)
+    ed_output.set_prop(PROP_LINE_TOP, cnt-1)
+
+
 def output(content):
 
     opt = settings.get('show_result_on_window', False)
@@ -119,6 +132,7 @@ def output(content):
         for s in content.splitlines():
             app_log(LOG_ADD, s, 0, panel=LOG_PANEL_OUTPUT)
 
+        output_scroll_to_end()
     else:
         toNewTab(content)
 
