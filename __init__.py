@@ -72,7 +72,23 @@ def startPlugin():
         Connection.setHistoryManager(history)
 
     _log("Plugin loaded")
+    
+    timer_proc(TIMER_START, gui_callback, 250)
 
+from threading import Event
+gui_event = Event()
+def gui_callback(*args, **kwargs):
+    if gui_event.is_set():
+        
+        opt = settings.get('show_result_on_window', False)
+        if not opt:
+            if settings.get('focus_on_result', False):
+                ed.cmd(cmds.cmd_ShowPanelOutput_AndFocus)
+            else:
+                ed.cmd(cmds.cmd_ShowPanelOutput)
+        output_scroll_to_end()
+        
+        gui_event.clear()
 
 def getConnections():
 
@@ -83,7 +99,7 @@ def getConnections():
         allSettings = settings.all()
     
         for name, config in options.items():
-            connectionsObj[name] = Connection(name, config, settings=allSettings, commandClass='Command')
+            connectionsObj[name] = Connection(name, config, settings=allSettings, commandClass='ThreadCommand')
 
     return connectionsObj
 
@@ -117,18 +133,13 @@ def output(content):
 
     opt = settings.get('show_result_on_window', False)
     if not opt:
-        if settings.get('focus_on_result', False):
-            ed.cmd(cmds.cmd_ShowPanelOutput_AndFocus)
-        else:
-            ed.cmd(cmds.cmd_ShowPanelOutput)
-
         if settings.get('clear_output', False):
             app_log(LOG_CLEAR, '', panel=LOG_PANEL_OUTPUT)
 
         for s in content.splitlines():
             app_log(LOG_ADD, s, 0, panel=LOG_PANEL_OUTPUT)
 
-        output_scroll_to_end()
+        gui_event.set() # show Output panel and scroll to end
     else:
         toNewTab(content)
 

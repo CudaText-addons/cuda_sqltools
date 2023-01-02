@@ -5,6 +5,7 @@ import time
 import logging
 
 from threading import Thread, Timer
+from cudatext import *
 
 logger = logging.getLogger(__name__)
 
@@ -160,8 +161,7 @@ class ThreadCommand(Command, Thread):
                          timeout=timeout,
                          silenceErrors=silenceErrors,
                          stream=stream)
-        Thread.__init__(self)
-
+        Thread.__init__(self, daemon=True)
     def stop(self):
         if not self.process:
             return
@@ -181,7 +181,14 @@ class ThreadCommand(Command, Thread):
                           .format(self.timeout))
         except Exception:
             pass
-
+            
+    def __repr__(self): return f'ThreadCommand{self.ident}' # needed for timer_proc
+    def wake_threads(self, tag='', info=''):
+        if self.is_alive():
+            time.sleep(0.01) # give cpu time to threads
+        else:
+            timer_proc(TIMER_STOP, self.wake_threads, 50)
+    
     @staticmethod
     def createAndRun(args, env, callback, query=None, encoding='utf-8',
                      options=None, timeout=Command.timeout, silenceErrors=False, stream=False):
@@ -200,4 +207,7 @@ class ThreadCommand(Command, Thread):
                                 stream=stream)
         command.start()
         killTimeout = Timer(command.timeout, command.stop)
+        killTimeout.daemon = True
         killTimeout.start()
+        
+        timer_proc(TIMER_START, command.wake_threads, 50)
