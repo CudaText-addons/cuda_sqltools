@@ -117,6 +117,7 @@ class Command(object):
                 resultString = "{0}{1}\n".format(resultString, formattedQueryInfo)
 
         self.callback(resultString)
+        ThreadCommand.activeThreads -= 1
 
     @staticmethod
     def _formatShowQuery(query, queryTimeStart, queryTimeEnd):
@@ -146,6 +147,8 @@ class Command(object):
 
 
 class ThreadCommand(Command, Thread):
+    activeThreads = 0
+    
     def __init__(self, args, env, callback, query=None, encoding='utf-8',
                  options=None, timeout=Command.timeout, silenceErrors=False, stream=False):
         if options is None:
@@ -181,13 +184,6 @@ class ThreadCommand(Command, Thread):
                           .format(self.timeout))
         except Exception:
             pass
-            
-    def __repr__(self): return f'ThreadCommand{self.ident}' # needed for timer_proc
-    def wake_threads(self, tag='', info=''):
-        if self.is_alive():
-            time.sleep(0.01) # give cpu time to threads
-        else:
-            timer_proc(TIMER_STOP, self.wake_threads, 50)
     
     @staticmethod
     def createAndRun(args, env, callback, query=None, encoding='utf-8',
@@ -206,8 +202,7 @@ class ThreadCommand(Command, Thread):
                                 silenceErrors=silenceErrors,
                                 stream=stream)
         command.start()
+        ThreadCommand.activeThreads += 1
         killTimeout = Timer(command.timeout, command.stop)
         killTimeout.daemon = True
         killTimeout.start()
-        
-        timer_proc(TIMER_START, command.wake_threads, 50)

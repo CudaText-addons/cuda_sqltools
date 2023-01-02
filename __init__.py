@@ -1,4 +1,5 @@
 import os
+from time import sleep
 from cudatext import *
 import cudatext_cmd as cmds
 
@@ -7,6 +8,11 @@ from .SQLToolsAPI.Storage import Storage, Settings
 from .SQLToolsAPI.Connection import Connection
 from .SQLToolsAPI.History import History
 from .SQLToolsAPI.Completion import Completion
+from .SQLToolsAPI.Command import ThreadCommand
+
+TIMER_MIN = 50
+TIMER_MAX = 250
+TIMER_CURRENT = TIMER_MAX
 
 USER_FOLDER                  = None
 DEFAULT_FOLDER               = None
@@ -73,11 +79,22 @@ def startPlugin():
 
     _log("Plugin loaded")
     
-    timer_proc(TIMER_START, gui_callback, 250)
+    timer_proc(TIMER_START, loop, TIMER_MAX)
 
 from threading import Event
 gui_event = Event()
-def gui_callback(*args, **kwargs):
+
+def loop(*args, **kwargs):
+    global TIMER_CURRENT
+    if ThreadCommand.activeThreads > 0:
+        sleep(0.01) # give cpu time to query threads
+        if TIMER_CURRENT != TIMER_MIN:
+            TIMER_CURRENT = TIMER_MIN
+            timer_proc(TIMER_START, loop, TIMER_MIN)
+    elif TIMER_CURRENT != TIMER_MAX:
+        TIMER_CURRENT = TIMER_MAX
+        timer_proc(TIMER_START, loop, TIMER_MAX)
+
     if gui_event.is_set():
         
         opt = settings.get('show_result_on_window', False)
