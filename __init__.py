@@ -98,6 +98,7 @@ def loop(*args, **kwargs):
             timer_proc(TIMER_START, loop, TIMER_MIN)
     elif TIMER_CURRENT != TIMER_MAX:
         msg_status('SQL Tools: done')
+        lastThreadCnt = 0
         TIMER_CURRENT = TIMER_MAX
         timer_proc(TIMER_START, loop, TIMER_MAX)
 
