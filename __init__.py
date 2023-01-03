@@ -83,11 +83,15 @@ def startPlugin():
 
 from threading import Event
 gui_event = Event()
+lastThreadCnt = 0
 
 def loop(*args, **kwargs):
     global TIMER_CURRENT
+    global lastThreadCnt
     if ThreadCommand.activeThreads > 0:
-        msg_status('SQL Tools: {} active queries...'.format(ThreadCommand.activeThreads))
+        if ThreadCommand.activeThreads != lastThreadCnt:
+            msg_status('SQL Tools: {} active queries...'.format(ThreadCommand.activeThreads))
+        lastThreadCnt = ThreadCommand.activeThreads
         sleep(0.01) # give cpu time to query threads
         if TIMER_CURRENT != TIMER_MIN:
             TIMER_CURRENT = TIMER_MIN
