@@ -87,11 +87,13 @@ gui_event = Event()
 def loop(*args, **kwargs):
     global TIMER_CURRENT
     if ThreadCommand.activeThreads > 0:
+        msg_status(f'SQL Tools: {ThreadCommand.activeThreads} active queries...')
         sleep(0.01) # give cpu time to query threads
         if TIMER_CURRENT != TIMER_MIN:
             TIMER_CURRENT = TIMER_MIN
             timer_proc(TIMER_START, loop, TIMER_MIN)
     elif TIMER_CURRENT != TIMER_MAX:
+        msg_status(f'SQL Tools: done')
         TIMER_CURRENT = TIMER_MAX
         timer_proc(TIMER_START, loop, TIMER_MAX)
 
