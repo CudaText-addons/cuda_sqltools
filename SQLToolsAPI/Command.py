@@ -5,6 +5,7 @@ import time
 import logging
 
 from threading import Thread, Timer
+from cudatext import *
 
 logger = logging.getLogger(__name__)
 
@@ -116,6 +117,7 @@ class Command(object):
                 resultString = "{0}{1}\n".format(resultString, formattedQueryInfo)
 
         self.callback(resultString)
+        ThreadCommand.activeThreads -= 1
 
     @staticmethod
     def _formatShowQuery(query, queryTimeStart, queryTimeEnd):
@@ -145,6 +147,8 @@ class Command(object):
 
 
 class ThreadCommand(Command, Thread):
+    activeThreads = 0
+    
     def __init__(self, args, env, callback, query=None, encoding='utf-8',
                  options=None, timeout=Command.timeout, silenceErrors=False, stream=False):
         if options is None:
@@ -160,8 +164,7 @@ class ThreadCommand(Command, Thread):
                          timeout=timeout,
                          silenceErrors=silenceErrors,
                          stream=stream)
-        Thread.__init__(self)
-
+        Thread.__init__(self, daemon=True)
     def stop(self):
         if not self.process:
             return
@@ -181,7 +184,7 @@ class ThreadCommand(Command, Thread):
                           .format(self.timeout))
         except Exception:
             pass
-
+    
     @staticmethod
     def createAndRun(args, env, callback, query=None, encoding='utf-8',
                      options=None, timeout=Command.timeout, silenceErrors=False, stream=False):
@@ -199,5 +202,7 @@ class ThreadCommand(Command, Thread):
                                 silenceErrors=silenceErrors,
                                 stream=stream)
         command.start()
+        ThreadCommand.activeThreads += 1
         killTimeout = Timer(command.timeout, command.stop)
+        killTimeout.daemon = True
         killTimeout.start()

@@ -1,4 +1,5 @@
 import os
+from time import sleep
 from cudatext import *
 import cudatext_cmd as cmds
 
@@ -7,6 +8,11 @@ from .SQLToolsAPI.Storage import Storage, Settings
 from .SQLToolsAPI.Connection import Connection
 from .SQLToolsAPI.History import History
 from .SQLToolsAPI.Completion import Completion
+from .SQLToolsAPI.Command import ThreadCommand
+
+TIMER_MIN = 50
+TIMER_MAX = 250
+TIMER_CURRENT = TIMER_MAX
 
 USER_FOLDER                  = None
 DEFAULT_FOLDER               = None
@@ -72,7 +78,36 @@ def startPlugin():
         Connection.setHistoryManager(history)
 
     _log("Plugin loaded")
+    
+    timer_proc(TIMER_START, loop, TIMER_MAX)
 
+from threading import Event
+gui_event = Event()
+
+def loop(*args, **kwargs):
+    global TIMER_CURRENT
+    if ThreadCommand.activeThreads > 0:
+        msg_status('SQL Tools: {} active queries...'.format(ThreadCommand.activeThreads))
+        sleep(0.01) # give cpu time to query threads
+        if TIMER_CURRENT != TIMER_MIN:
+            TIMER_CURRENT = TIMER_MIN
+            timer_proc(TIMER_START, loop, TIMER_MIN)
+    elif TIMER_CURRENT != TIMER_MAX:
+        msg_status('SQL Tools: done')
+        TIMER_CURRENT = TIMER_MAX
+        timer_proc(TIMER_START, loop, TIMER_MAX)
+
+    if gui_event.is_set():
+        
+        opt = settings.get('show_result_on_window', False)
+        if not opt:
+            if settings.get('focus_on_result', False):
+                ed.cmd(cmds.cmd_ShowPanelOutput_AndFocus)
+            else:
+                ed.cmd(cmds.cmd_ShowPanelOutput)
+        output_scroll_to_end()
+        
+        gui_event.clear()
 
 def getConnections():
 
@@ -83,7 +118,7 @@ def getConnections():
         allSettings = settings.all()
     
         for name, config in options.items():
-            connectionsObj[name] = Connection(name, config, settings=allSettings, commandClass='Command')
+            connectionsObj[name] = Connection(name, config, settings=allSettings, commandClass='ThreadCommand')
 
     return connectionsObj
 
@@ -117,18 +152,13 @@ def output(content):
 
     opt = settings.get('show_result_on_window', False)
     if not opt:
-        if settings.get('focus_on_result', False):
-            ed.cmd(cmds.cmd_ShowPanelOutput_AndFocus)
-        else:
-            ed.cmd(cmds.cmd_ShowPanelOutput)
-
         if settings.get('clear_output', False):
             app_log(LOG_CLEAR, '', panel=LOG_PANEL_OUTPUT)
 
         for s in content.splitlines():
             app_log(LOG_ADD, s, 0, panel=LOG_PANEL_OUTPUT)
 
-        output_scroll_to_end()
+        gui_event.set() # show Output panel and scroll to end
     else:
         toNewTab(content)
 
