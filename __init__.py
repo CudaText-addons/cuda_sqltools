@@ -179,9 +179,11 @@ def output_title(content):
 
 def toNewTab(content, discard=None):
 
-    file_open('')
-    ed.set_prop(PROP_TAB_TITLE, 'SQL result')
-    ed.set_text_all(str(content))
+    def _toNewTab():
+        file_open('')
+        ed.set_prop(PROP_TAB_TITLE, 'SQL result')
+        ed.set_text_all(str(content))
+    gui_call(_toNewTab)
 
 
 def editor_insert(text):
