@@ -1,3 +1,8 @@
+2023.01.07 (by @veksha)
+- fix: timeout printed before query
+- fix: freeze when right after startup user calls "Describe table" or "Describe function"
+- fix: freeze when "show_result_on_window": true
+- fix: no timeout message with "use_streams": true
 
 2023.01.03
 + add: some reworking via threads/timers, to avoid slow work compared with Sublime version (by @veksha)
