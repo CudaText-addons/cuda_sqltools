@@ -81,8 +81,10 @@ def startPlugin():
     
     timer_proc(TIMER_START, loop, TIMER_MAX)
 
-from threading import Event
-gui_event = Event()
+from threading import Event, main_thread
+from queue import Empty, Queue
+q_procs = Queue()
+gui_call = q_procs.put # for procs that need to be executed in the MainThread
 lastThreadCnt = 0
 
 def loop(*args, **kwargs):
@@ -102,17 +104,11 @@ def loop(*args, **kwargs):
         TIMER_CURRENT = TIMER_MAX
         timer_proc(TIMER_START, loop, TIMER_MAX)
 
-    if gui_event.is_set():
-        
-        opt = settings.get('show_result_on_window', False)
-        if not opt:
-            if settings.get('focus_on_result', False):
-                ed.cmd(cmds.cmd_ShowPanelOutput_AndFocus)
-            else:
-                ed.cmd(cmds.cmd_ShowPanelOutput)
-        output_scroll_to_end()
-        
-        gui_event.clear()
+    try:
+        proc = q_procs.get(block=False)
+        proc()
+    except Empty:
+        pass
 
 def getConnections():
 
@@ -152,6 +148,14 @@ def output_scroll_to_end():
     ed_output.set_caret(0, cnt-1)
     ed_output.set_prop(PROP_LINE_TOP, cnt-1)
 
+def show_output_panel():
+    opt = settings.get('show_result_on_window', False)
+    if not opt:
+        if settings.get('focus_on_result', False):
+            ed.cmd(cmds.cmd_ShowPanelOutput_AndFocus)
+        else:
+            ed.cmd(cmds.cmd_ShowPanelOutput)
+    output_scroll_to_end()
 
 def output(content):
 
@@ -163,7 +167,7 @@ def output(content):
         for s in content.splitlines():
             app_log(LOG_ADD, s, 0, panel=LOG_PANEL_OUTPUT)
 
-        gui_event.set() # show Output panel and scroll to end
+        gui_call(show_output_panel) # show Output panel and scroll to end (MainThread!)
     else:
         toNewTab(content)
 
@@ -345,8 +349,10 @@ class ST:
             msg_er('Your database has no tables')
             return
 
-        selected = dlg_menu(DMENU_LIST, ST.tables, caption='Tables')
-        callback(selected)
+        def gui_dlg_menu():
+            selected = dlg_menu(DMENU_LIST, ST.tables, caption='Tables')
+            callback(selected)
+        gui_call(gui_dlg_menu)
 
     @staticmethod
     def selectFunction(callback):
@@ -354,9 +360,10 @@ class ST:
             msg_er('Your database has no functions')
             return
 
-        selected = dlg_menu(DMENU_LIST, ST.functions, caption='Functions')
-        callback(selected)
-
+        def gui_dlg_menu():
+            selected = dlg_menu(DMENU_LIST, ST.functions, caption='Functions')
+            callback(selected)
+        gui_call(gui_dlg_menu)
 
 class Command:
     def __init__(self):
