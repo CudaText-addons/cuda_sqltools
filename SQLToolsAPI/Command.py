@@ -27,6 +27,7 @@ class Command(object):
         self.silenceErrors = silenceErrors
         self.stream = stream
         self.process = None
+        self.timeout_occured = False
 
         if 'show_query' not in self.options:
             self.options['show_query'] = False
@@ -117,6 +118,9 @@ class Command(object):
                 resultString = "{0}{1}\n".format(resultString, formattedQueryInfo)
 
         self.callback(resultString)
+        if self.timeout_occured:
+            self.callback("Command execution time exceeded 'thread_timeout' ({0} s).\nProcess killed!\n\n"
+                          .format(self.timeout))
         ThreadCommand.activeThreads -= 1
 
     @staticmethod
@@ -180,8 +184,7 @@ class ThreadCommand(Command, Thread):
             self.process = None
 
             logger.info("command execution exceeded timeout (%s s), process killed", self.timeout)
-            self.callback("Command execution time exceeded 'thread_timeout' ({0} s).\nProcess killed!\n\n"
-                          .format(self.timeout))
+            self.timeout_occured = True
         except Exception:
             pass
     
