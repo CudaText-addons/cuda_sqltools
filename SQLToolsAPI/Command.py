@@ -36,6 +36,12 @@ class Command(object):
                                                    self.options['show_query']) else False
 
     def run(self):
+        def on_finish():
+            if self.timeout_occured:
+                self.callback("Command execution time exceeded 'thread_timeout' ({0} s).\nProcess killed!\n\n"
+                              .format(self.timeout))
+            ThreadCommand.activeThreads -= 1
+        
         if not self.query:
             return
 
@@ -87,7 +93,7 @@ class Command(object):
             if self.options['show_query']:
                 formattedQueryInfo = self._formatShowQuery(self.query, queryTimerStart, queryTimerEnd)
                 self.callback(formattedQueryInfo + '\n')
-            ThreadCommand.activeThreads -= 1
+            on_finish()
             return
 
         # regular mode is handled with more reliable Popen.communicate
@@ -118,10 +124,7 @@ class Command(object):
                 resultString = "{0}{1}\n".format(resultString, formattedQueryInfo)
 
         self.callback(resultString)
-        if self.timeout_occured:
-            self.callback("Command execution time exceeded 'thread_timeout' ({0} s).\nProcess killed!\n\n"
-                          .format(self.timeout))
-        ThreadCommand.activeThreads -= 1
+        on_finish()
 
     @staticmethod
     def _formatShowQuery(query, queryTimeStart, queryTimeEnd):
