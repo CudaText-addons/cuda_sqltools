@@ -87,7 +87,7 @@ class Command(object):
             if self.options['show_query']:
                 formattedQueryInfo = self._formatShowQuery(self.query, queryTimerStart, queryTimerEnd)
                 self.callback(formattedQueryInfo + '\n')
-
+            ThreadCommand.activeThreads -= 1
             return
 
         # regular mode is handled with more reliable Popen.communicate
