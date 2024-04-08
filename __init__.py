@@ -165,7 +165,7 @@ def output(content):
             app_log(LOG_CLEAR, '', panel=LOG_PANEL_OUTPUT)
 
         for s in content.splitlines():
-            app_log(LOG_ADD, s, 0, panel=LOG_PANEL_OUTPUT)
+            app_log(LOG_ADD, s, panel=LOG_PANEL_OUTPUT)
 
         gui_call(show_output_panel) # show Output panel and scroll to end (MainThread!)
     else:
