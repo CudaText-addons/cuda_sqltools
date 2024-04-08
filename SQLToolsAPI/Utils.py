@@ -13,7 +13,7 @@ import sqlparse
 
 # Regular expression for comments
 comment_re = re.compile(
-    '(^)?[^\S\n]*/(?:\*(.*?)\*/[^\S\n]*|/[^\n]*)($)?',
+    r'(^)?[^\S\n]*/(?:\*(.*?)\*/[^\S\n]*|/[^\n]*)($)?',
     re.DOTALL | re.MULTILINE
 )
 

@@ -283,7 +283,7 @@ class Completion:
         try:
             identifiers = extractTables(sql)
         except Exception as e:
-            logger.debug('Failed to extact the list identifiers from SQL:\n {}'.format(sql),
+            logger.debug('Failed to extract the list identifiers from SQL:\n {}'.format(sql),
                          exc_info=True)
 
         # joinAlias is set only if user is editing join condition with alias. E.g.
