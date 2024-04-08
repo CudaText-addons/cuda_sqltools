@@ -3,6 +3,9 @@ from time import sleep
 from cudatext import *
 import cudatext_cmd as cmds
 
+from cudax_lib import get_translation
+_ = get_translation(__file__)  # I18N
+
 from .SQLToolsAPI import Utils
 from .SQLToolsAPI.Storage import Storage, Settings
 from .SQLToolsAPI.Connection import Connection
@@ -55,21 +58,21 @@ def startPlugin():
     except Exception as ex:
         settings = None
         _log('Error parsing '+SETTINGS_FILENAME)
-        print('ERROR: SQL Tools:', str(ex))
+        print(_('ERROR: SQL Tools:'), str(ex))
 
     try:
         queries = Storage(QUERIES_FILENAME, default=QUERIES_FILENAME_DEFAULT)
     except Exception as ex:
         queries = None
         _log('Error parsing '+QUERIES_FILENAME)
-        print('ERROR: SQL Tools:', str(ex))
+        print(_('ERROR: SQL Tools:'), str(ex))
 
     try:
         connections = Settings(CONNECTIONS_FILENAME, default=CONNECTIONS_FILENAME_DEFAULT)
     except Exception as ex:
         connections = None
         _log('Error parsing '+CONNECTIONS_FILENAME)
-        print('ERROR: SQL Tools:', str(ex))
+        print(_('ERROR: SQL Tools:'), str(ex))
 
     if settings:
         history     = History(settings.get('history_size', 100))
@@ -92,14 +95,14 @@ def loop(*args, **kwargs):
     global lastThreadCnt
     if ThreadCommand.activeThreads > 0:
         if ThreadCommand.activeThreads != lastThreadCnt:
-            msg_status('SQL Tools: {} active queries...'.format(ThreadCommand.activeThreads))
+            msg_status(_('SQL Tools: {} active queries...').format(ThreadCommand.activeThreads))
         lastThreadCnt = ThreadCommand.activeThreads
         sleep(0.01) # give cpu time to query threads
         if TIMER_CURRENT != TIMER_MIN:
             TIMER_CURRENT = TIMER_MIN
             timer_proc(TIMER_START, loop, TIMER_MIN)
     elif TIMER_CURRENT != TIMER_MAX:
-        msg_status('SQL Tools: done')
+        msg_status(_('SQL Tools: done'))
         lastThreadCnt = 0
         TIMER_CURRENT = TIMER_MAX
         timer_proc(TIMER_START, loop, TIMER_MAX)
@@ -181,7 +184,7 @@ def toNewTab(content, discard=None):
 
     def _toNewTab():
         file_open('')
-        ed.set_prop(PROP_TAB_TITLE, 'SQL result')
+        ed.set_prop(PROP_TAB_TITLE, _('SQL result'))
         ed.set_text_all(str(content))
     gui_call(_toNewTab)
 
@@ -331,7 +334,7 @@ class ST:
 
         ST.connectionList = getConnections()
         if len(ST.connectionList) == 0:
-            msg_er('You need to setup your connections first')
+            msg_er(_('You need to setup your connections first'))
             return
 
         menu = []
@@ -342,28 +345,28 @@ class ST:
                 )
         menu.sort()
 
-        selected = dlg_menu(DMENU_LIST, menu, caption='Connections')
+        selected = dlg_menu(DMENU_LIST, menu, caption=_('Connections'))
         ST.setConnection(selected, menu, tablesCallback, columnsCallback, functionsCallback)
 
     @staticmethod
     def selectTable(callback):
         if len(ST.tables) == 0:
-            msg_er('Your database has no tables')
+            msg_er(_('Your database has no tables'))
             return
 
         def gui_dlg_menu():
-            selected = dlg_menu(DMENU_LIST, ST.tables, caption='Tables')
+            selected = dlg_menu(DMENU_LIST, ST.tables, caption=_('Tables'))
             callback(selected)
         gui_call(gui_dlg_menu)
 
     @staticmethod
     def selectFunction(callback):
         if not ST.functions:
-            msg_er('Your database has no functions')
+            msg_er(_('Your database has no functions'))
             return
 
         def gui_dlg_menu():
-            selected = dlg_menu(DMENU_LIST, ST.functions, caption='Functions')
+            selected = dlg_menu(DMENU_LIST, ST.functions, caption=_('Functions'))
             callback(selected)
         gui_call(gui_dlg_menu)
 
@@ -391,7 +394,7 @@ class Command:
             if selected is None:
                 return None
             t = ST.tables[selected]
-            output_title.title = 'Table "%s"'%t
+            output_title.title = _('Table "%s"') % t
             return ST.conn.getTableRecords(t, output_title)
 
         ST.selectTable(cb)
@@ -432,7 +435,7 @@ class Command:
 
         text = get_editor_text()
         if not text:
-            msg_status('Text not selected')
+            msg_status(_('Text not selected'))
             return
 
         if not ST.conn:
@@ -445,7 +448,7 @@ class Command:
 
         text = ed.get_text_all()
         if not text:
-            msg_status('Text is empty')
+            msg_status(_('Text is empty'))
             return
 
         if not ST.conn:
@@ -458,7 +461,7 @@ class Command:
 
         text = get_editor_text()
         if not text:
-            msg_status('Text not selected')
+            msg_status(_('Text not selected'))
             return
 
         if not ST.conn:
@@ -471,7 +474,7 @@ class Command:
 
         carets = ed.get_carets()
         if len(carets)!=1:
-            msg_status('Need single caret')
+            msg_status(_('Need single caret'))
             return
 
         text = ed.get_text_sel()
@@ -491,7 +494,7 @@ class Command:
 
         if all:
             ed.set_text_all(text)
-            msg_status('SQL Tools: formatted all text')
+            msg_status(_('SQL Tools: formatted all text'))
         else:
             x0, y0, x1, y1 = carets[0]
             if (y1 > y0) or ((y1 == y0) and (x1 >= x0)):
@@ -502,7 +505,7 @@ class Command:
             ed.set_caret(x0, y0)
             ed.delete(x0, y0, x1, y1)
             ed.insert(x0, y0, text)
-            msg_status('SQL Tools: formatted selection')
+            msg_status(_('SQL Tools: formatted selection'))
 
     def showHistory(self):
 
@@ -511,10 +514,10 @@ class Command:
             return
 
         if len(history.all()) == 0:
-            msg_status('SQL Tools: History is empty')
+            msg_status(_('SQL Tools: History is empty'))
             return
 
-        selected = dlg_menu(DMENU_LIST, history.all(), caption='History')
+        selected = dlg_menu(DMENU_LIST, history.all(), caption=_('History'))
         if selected is None:
             return None
         return ST.conn.execute(history.get(selected), output)
@@ -523,10 +526,10 @@ class Command:
 
         text = get_editor_text()
         if not text:
-            msg_status('Text not selected')
+            msg_status(_('Text not selected'))
             return
 
-        alias = dlg_input('Query alias:', '')
+        alias = dlg_input(_('Query alias:'), '')
         if alias: #can be None or empty str
             queries.add(alias, text)
 
@@ -546,7 +549,7 @@ class Command:
             options.append('\t'.join([str(alias), str(query)]))
         options.sort()
 
-        selected = dlg_menu(DMENU_LIST, options, caption='Queries')
+        selected = dlg_menu(DMENU_LIST, options, caption=_('Queries'))
         if selected is None:
             return None
         text = queriesList.get(options[selected].split('\t')[0])
@@ -566,7 +569,7 @@ class Command:
 
         queriesList = queries.all()
         if not queriesList:
-            msg_status('SQL Tools: No saved queries')
+            msg_status(_('SQL Tools: No saved queries'))
             return
 
         options = []
@@ -574,7 +577,7 @@ class Command:
             options.append('\t'.join([str(alias), str(query)]))
         options.sort()
 
-        selected = dlg_menu(DMENU_LIST, options, caption='Queries')
+        selected = dlg_menu(DMENU_LIST, options, caption=_('Queries'))
         if selected is None:
             return None
         text = options[selected].split('\t')[0]
