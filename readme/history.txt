@@ -1,3 +1,6 @@
+2024.04.08
++ add: support for i18n (by Markus)
+
 2023.01.07 (by @veksha)
 - fix: timeout printed before query
 - fix: freeze when right after startup user calls "Describe table" or "Describe function"
